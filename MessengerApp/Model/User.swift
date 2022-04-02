@@ -12,4 +12,8 @@ struct User {
     let lastName: String
     let email: String
     let phone: String
+    
+    var profilePictureFileName: String {
+        return "\(phone)_profile_picture.png"
+    }
 }

@@ -7,8 +7,11 @@
 
 import UIKit
 import Firebase
+import JGProgressHUD
 
 class LoginViewController: UIViewController {
+    
+    let spinner = JGProgressHUD(style: .dark)
     
     let phone: UITextField = {
         let text = UITextField()
@@ -17,7 +20,8 @@ class LoginViewController: UIViewController {
         text.autocorrectionType = .no
         text.autocapitalizationType = .none
         text.returnKeyType = .done
-        text.frame = CGRect(x: 80, y: 240, width: 240, height: 60)
+        text.keyboardType = .phonePad
+        text.translatesAutoresizingMaskIntoConstraints = false
         text.clipsToBounds = true
         text.layer.cornerRadius = 5
         text.layer.borderWidth = 1
@@ -27,11 +31,11 @@ class LoginViewController: UIViewController {
     
     let loginButton: UIButton = {
         let button = UIButton()
-        button.frame = CGRect(x: 80, y: 400, width: 240, height: 60)
         button.setTitle("Login", for: .normal)
         button.backgroundColor = .black
         button.clipsToBounds = true
         button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapLoginButton), for: .touchUpInside)
         return button
     }()
@@ -45,6 +49,8 @@ class LoginViewController: UIViewController {
     
         view.addSubview(phone)
         view.addSubview(loginButton)
+        
+        setUpConstraints()
     }
     
     @objc func didTapLoginButton() {
@@ -52,13 +58,18 @@ class LoginViewController: UIViewController {
             return
         }
         
+        let phoneNumber = phone.replacingOccurrences(of: " ", with: "")
         
-        DatabaseManager.shared.userExists(with: phone) { exists in
+        UserDefaults.standard.set(phoneNumber, forKey: "phone")
+        spinner.show(in: view)
+        
+        DatabaseManager.shared.userExistsFirestore(with: phoneNumber) { exists in
             if !phone.isEmpty {
-                let number = "\(phone)"
+                let number = "\(phoneNumber)"
                 AuthManager.shared.startAuth(phoneNumber: number) { [weak self] success in
                     guard success else { return }
                     DispatchQueue.main.async {
+                        self?.spinner.dismiss()
                         let vc = VerificationViewController()
                         if exists == true {
                             vc.destination = true
@@ -69,6 +80,22 @@ class LoginViewController: UIViewController {
                     }
                 }
             }
+        }
+    }
+    
+    func setUpConstraints() {
+        
+        phone.snp.makeConstraints { make in
+            make.bottom.equalTo(loginButton.snp.top).offset(-50)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().dividedBy(1.5)
+            make.height.equalTo(60)
+        }
+        
+        loginButton.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalToSuperview().dividedBy(1.5)
+            make.height.equalTo(60)
         }
     }
 }

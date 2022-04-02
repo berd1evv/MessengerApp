@@ -7,10 +7,11 @@
 
 import UIKit
 import FirebaseAuth
+import JGProgressHUD
 
 class RegisterViewController: UIViewController {
     
-    let login = LoginViewController()
+    let spinner = JGProgressHUD(style: .dark)
             
     let imageView: UIImageView = {
         let image = UIImageView()
@@ -20,6 +21,7 @@ class RegisterViewController: UIViewController {
         image.layer.cornerRadius = 120 / 2
         image.layer.borderWidth = 1
         image.contentMode = .scaleAspectFit
+        image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
     
@@ -30,7 +32,7 @@ class RegisterViewController: UIViewController {
         text.autocorrectionType = .no
         text.autocapitalizationType = .none
         text.returnKeyType = .continue
-        text.frame = CGRect(x: 80, y: 240, width: 240, height: 60)
+        text.translatesAutoresizingMaskIntoConstraints = false
         text.clipsToBounds = true
         text.layer.cornerRadius = 5
         text.layer.borderWidth = 1
@@ -44,7 +46,7 @@ class RegisterViewController: UIViewController {
         text.textAlignment = .center
         text.autocorrectionType = .no
         text.returnKeyType = .continue
-        text.frame = CGRect(x: 80, y: 320, width: 240, height: 60)
+        text.translatesAutoresizingMaskIntoConstraints = false
         text.clipsToBounds = true
         text.layer.cornerRadius = 5
         text.layer.borderWidth = 1
@@ -59,7 +61,7 @@ class RegisterViewController: UIViewController {
         text.autocorrectionType = .no
         text.autocapitalizationType = .none
         text.returnKeyType = .continue
-        text.frame = CGRect(x: 80, y: 400, width: 240, height: 60)
+        text.translatesAutoresizingMaskIntoConstraints = false
         text.clipsToBounds = true
         text.layer.cornerRadius = 5
         text.layer.borderWidth = 1
@@ -69,11 +71,11 @@ class RegisterViewController: UIViewController {
     
     let registrationButton: UIButton = {
         let button = UIButton()
-        button.frame = CGRect(x: 80, y: 560, width: 240, height: 60)
         button.setTitle("Register", for: .normal)
         button.backgroundColor = .black
         button.clipsToBounds = true
         button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapRegisterButton), for: .touchUpInside)
         return button
     }()
@@ -96,7 +98,10 @@ class RegisterViewController: UIViewController {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(didTapChangeProfilePicture))
         imageView.isUserInteractionEnabled = true
         imageView.addGestureRecognizer(gesture)
+        
+        setUpConstraints()
     }
+    
     
     @objc func didTapChangeProfilePicture() {
         presentPhotoActionSheet()
@@ -114,13 +119,74 @@ class RegisterViewController: UIViewController {
                   }
                   return
         }
-                
-        DatabaseManager.shared.insertUser(with: User(firstName: firstName,
-                                                     lastName: lastName,
-                                                     email: email,
-                                                     phone: "+996777063806"))
+        spinner.show(in: view)
         
-        navigationController?.pushViewController(TabBarViewController(), animated: true)
+        let number = UserDefaults.standard.string(forKey: "phone") ?? ""
+        
+        let user = User(firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        phone: number)
+
+        
+        DatabaseManager.shared.insertUserFirestore(with: user) { success in
+            if success {
+                guard let image = self.imageView.image, let data = image.pngData() else {
+                    return
+                }
+                let fileName = user.profilePictureFileName
+                StorageManger.shared.uploadProfilePicture(with: data, fileName: fileName) { result in
+                    switch result {
+                    case .success(let downloadURL):
+                        UserDefaults.standard.set(downloadURL, forKey: "profile_picture_url")
+                    case .failure(_):
+                        print("Storage manager error")
+                    }
+                }
+            }
+        }
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.spinner.dismiss()
+            self.navigationController?.pushViewController(TabBarViewController(), animated: true)
+        }
+        
+    }
+    
+    func setUpConstraints() {
+        imageView.snp.makeConstraints { make in
+            make.bottom.equalTo(firstName.snp.bottom).offset(-70)
+            make.width.height.equalTo(120)
+            make.centerX.equalToSuperview()
+        }
+        
+        firstName.snp.makeConstraints { make in
+            make.bottom.equalTo(lastName.snp.top).offset(-20)
+            make.height.equalTo(60)
+            make.width.equalToSuperview().dividedBy(1.5)
+            make.centerX.equalToSuperview()
+        }
+        
+        lastName.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.height.equalTo(60)
+            make.width.equalToSuperview().dividedBy(1.5)
+        }
+        
+        email.snp.makeConstraints { make in
+            make.top.equalTo(lastName.snp.bottom).offset(20)
+            make.height.equalTo(60)
+            make.width.equalToSuperview().dividedBy(1.5)
+            make.centerX.equalToSuperview()
+        }
+        
+        registrationButton.snp.makeConstraints { make in
+            make.top.equalTo(email.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(60)
+            make.width.equalToSuperview().dividedBy(1.5)
+        }
     }
 
 }
