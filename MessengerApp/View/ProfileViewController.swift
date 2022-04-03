@@ -7,17 +7,18 @@
 
 import UIKit
 import Firebase
+import SDWebImage
 
 class ProfileViewController: UIViewController {
     
     let tableView = UITableView()
     let data = ["Account", "Log out"]
     var currentUser: [String:Any]?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white        
-
+        view.backgroundColor = .white
+        
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
@@ -27,7 +28,7 @@ class ProfileViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         tableView.frame = view.frame
     }
-
+    
 }
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
@@ -51,8 +52,8 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         if data[indexPath.row] == "Log out" {
             let actionSheet = UIAlertController(title: "Are you sure you want to log out?",
-                                                      message: "",
-                                                      preferredStyle: .actionSheet)
+                                                message: "",
+                                                preferredStyle: .actionSheet)
             actionSheet.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { [weak self] _ in
                 guard let strongSelf = self else { return }
                 let firebaseAuth = Auth.auth()
@@ -66,15 +67,29 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             actionSheet.addAction(UIAlertAction(title: "Cancel",
                                                 style: .cancel,
                                                 handler: nil))
-
+            
             self.present(actionSheet, animated: true)
             
         } else if data[indexPath.row] == "Account" {
             let firstName = UserDefaults.standard.string(forKey: "firstName")
             let lastName = UserDefaults.standard.string(forKey: "lastName")
             let email = UserDefaults.standard.string(forKey: "email")
+            let phone = UserDefaults.standard.string(forKey: "phone") ?? ""
+            
+            let fileName = phone + "_profile_picture.png"
+            let path = "images/" + fileName
             
             let vc = RegisterViewController()
+            
+            StorageManger.shared.downloadURL(for: path) { result in
+                switch result {
+                case .success(let url):
+                    vc.imageView.sd_setImage(with: url, completed: nil)
+                case .failure(let error):
+                    print("Failed to get download: \(error)")
+                }
+            }
+            
             vc.firstName.text = firstName
             vc.lastName.text = lastName
             vc.email.text = email
@@ -99,12 +114,12 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         image.layer.borderWidth = 1
         image.contentMode = .scaleAspectFit
         
-        StorageManger.shared.downloadURL(for: path) { [weak self] result in
+        StorageManger.shared.downloadURL(for: path) { result in
             switch result {
-                case .success(let url):
-                    self?.downloadImage(imageView: image, url: url)
-                case .failure(let error):
-                    print("Failed to get download: \(error)")
+            case .success(let url):
+                image.sd_setImage(with: url, completed: nil)
+            case .failure(let error):
+                print("Failed to get download: \(error)")
             }
         }
         
@@ -114,24 +129,11 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         label.text = "\(firstName!) \(lastName!)"
         label.font = .systemFont(ofSize: 20)
         label.frame = CGRect(x: 120, y: 10, width: 180, height: 40)
-
+        
         headerView.addSubview(image)
         headerView.addSubview(label)
         
         return headerView
-    }
-    
-    func downloadImage(imageView: UIImageView, url: URL) {
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data, error == nil else {
-                return
-            }
-            
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
-                imageView.image = image
-            }
-        }.resume()
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

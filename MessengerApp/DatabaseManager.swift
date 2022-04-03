@@ -198,10 +198,8 @@ extension DatabaseManager {
                       let date = MessageViewController.dateFormatter.date(from: dataString) else {
                           return
                       }
-                let phone = senderPhone.replacingOccurrences(of: "+", with: "")
-                let url = "https://firebasestorage.googleapis.com:443/v0/b/messenger-app-9bad4.appspot.com/o/images%2F%2B  \(phone)_profile_picture.png?alt=media&token=39c400b9-add4-4415-a9b9-0cdd5bc728de"
                 
-                let sender = Sender(photoURL: url,
+                let sender = Sender(photoURL: nil,
                                     senderId: senderPhone,
                                     displayName: name)
                 

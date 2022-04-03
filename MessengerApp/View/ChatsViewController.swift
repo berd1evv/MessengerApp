@@ -29,6 +29,8 @@ class ChatsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        title = "Chats"
+        navigationController?.navigationBar.prefersLargeTitles = true
         
         view.addSubview(tableView)
         view.addSubview(plusButton)

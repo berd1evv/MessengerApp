@@ -23,13 +23,16 @@ class MessageViewController: MessagesViewController {
     let conversationId: String?
     var isNewConversation = false
     
+    var senderPhotoURL: URL?
+    var otherUserURL: URL?
+    
     var messages = [Message]()
     
     var selfSender: Sender? {
         guard let phone = UserDefaults.standard.string(forKey: "phone") else {
             return nil
         }
-        return Sender(photoURL: "gs://messenger-app-9bad4.appspot.com/images/" + phone + "_profile_picture.png",
+        return Sender(photoURL: nil,
                senderId: phone,
                displayName: "John Snow")
     }
@@ -51,11 +54,13 @@ class MessageViewController: MessagesViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationController?.navigationBar.backItem?.title = ""
+        navigationController?.navigationBar.prefersLargeTitles = false
         
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
+        
         
     }
     
@@ -71,7 +76,7 @@ class MessageViewController: MessagesViewController {
                 print("Successfully loaded messages")
                 DispatchQueue.main.async {
                     self?.messages = messages
-                    self?.messagesCollectionView.reloadDataAndKeepOffset()
+                    self?.messagesCollectionView.reloadData()
                 }
             }
         }
@@ -84,23 +89,19 @@ extension MessageViewController: InputBarAccessoryViewDelegate {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty, let selfSender = self.selfSender else {
             return
         }
-
-        if isNewConversation {
-            let message = Message(sender: selfSender,
-                                  messageId: createMessageId(),
-                                  sentDate: Date(),
-                                  kind: .text(text))
-            DatabaseManager.shared.createNewConversations(with: otherUserPhone, name: self.title ?? "User", firstMessage: message) {[weak self] success in
-                if success {
-                    print("message sent ")
-                    self?.messagesCollectionView.reloadData()
-                }
+        messageInputBar.inputTextView.text = nil
+        let message = Message(sender: selfSender,
+                              messageId: createMessageId(),
+                              sentDate: Date(),
+                              kind: .text(text))
+        DatabaseManager.shared.createNewConversations(with: otherUserPhone, name: self.title ?? "User", firstMessage: message) {[weak self] success in
+            if success {
+                print("message sent ")
+                self?.messagesCollectionView.reloadData()
             }
-        } else {
-            print("message was not sent")
         }
+        
     }
-    
     
     func createMessageId() -> String {
         guard let phone = UserDefaults.standard.string(forKey: "phone") else {
@@ -138,5 +139,43 @@ extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, Mes
         return messages.count
     }
     
-    
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        let sender = message.sender
+        if sender.senderId == selfSender?.senderId {
+            if let currentUserImageURL = self.senderPhotoURL {
+                avatarView.sd_setImage(with: currentUserImageURL, completed: nil)
+            } else {
+                let phone = UserDefaults.standard.string(forKey: "phone") ?? ""
+                let path = "images/" + phone + "_profile_picture.png"
+                StorageManger.shared.downloadURL(for: path) { [weak self] result in
+                    switch result {
+                    case .success(let url):
+                        self?.senderPhotoURL = url
+                        DispatchQueue.main.async {
+                            avatarView.sd_setImage(with: url, completed: nil)
+                        }
+                    case .failure(let error):
+                        print("Failed to get download: \(error)")
+                    }
+                }
+            }
+        } else {
+            if let otherUserImageURL = self.otherUserURL {
+                avatarView.sd_setImage(with: otherUserImageURL, completed: nil)
+            } else {
+                let path = "images/" + otherUserPhone + "_profile_picture.png"
+                StorageManger.shared.downloadURL(for: path) { [weak self] result in
+                    switch result {
+                    case .success(let url):
+                        self?.otherUserURL = url
+                        DispatchQueue.main.async {
+                            avatarView.sd_setImage(with: url, completed: nil)
+                        }
+                    case .failure(let error):
+                        print("Failed to get download: \(error)")
+                    }
+                }
+            }
+        }
+    }
 }

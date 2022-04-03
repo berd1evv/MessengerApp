@@ -15,7 +15,7 @@ class LoginViewController: UIViewController {
     
     let phone: UITextField = {
         let text = UITextField()
-        text.placeholder = "Enter phone number"
+        text.placeholder = "Enter phone number ex: +996XXXXXXXXX"
         text.textAlignment = .center
         text.autocorrectionType = .no
         text.autocapitalizationType = .none
@@ -27,6 +27,13 @@ class LoginViewController: UIViewController {
         text.layer.borderWidth = 1
         text.layer.borderColor = UIColor.lightGray.cgColor
         return text
+    }()
+    
+    let alertLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .red
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     let loginButton: UIButton = {
@@ -48,6 +55,7 @@ class LoginViewController: UIViewController {
         phone.delegate = self
     
         view.addSubview(phone)
+        view.addSubview(alertLabel)
         view.addSubview(loginButton)
         
         setUpConstraints()
@@ -55,6 +63,7 @@ class LoginViewController: UIViewController {
     
     @objc func didTapLoginButton() {
         guard let phone = phone.text, !phone.isEmpty else {
+            alertLabel.text = "The field should not be empty"
             return
         }
         
@@ -84,6 +93,11 @@ class LoginViewController: UIViewController {
     }
     
     func setUpConstraints() {
+        
+        alertLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(phone.snp.top).offset(-10)
+            make.centerX.equalToSuperview()
+        }
         
         phone.snp.makeConstraints { make in
             make.bottom.equalTo(loginButton.snp.top).offset(-50)

@@ -22,7 +22,7 @@ class NewConversationViewController: UIViewController {
     let searchBar: UISearchBar = {
         let search = UISearchBar()
         search.placeholder = "Search for users"
-        search.showsCancelButton = true
+        search.searchBarStyle = .minimal
         search.translatesAutoresizingMaskIntoConstraints = false
         return search
     }()
@@ -125,6 +125,10 @@ class NewConversationViewController: UIViewController {
 
 extension NewConversationViewController: UISearchBarDelegate {
     
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text, !text.replacingOccurrences(of: " ", with: "").isEmpty else {
             return
@@ -139,6 +143,10 @@ extension NewConversationViewController: UISearchBarDelegate {
         self.label.isHidden = false
         searchBar.text = ""
         tableView.reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
     }
     
     func filterUsers(with term: String) {
