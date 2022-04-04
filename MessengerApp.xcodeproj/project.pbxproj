@@ -23,7 +23,6 @@
 		A9667D4B27F1882F008A779E /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9667D4A27F1882F008A779E /* DatabaseManager.swift */; };
 		A970000027F771AD000FCE58 /* NewConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A970FFFF27F771AD000FCE58 /* NewConversationTableViewCell.swift */; };
 		A97D7A6D27F0BA1200C41198 /* VerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A97D7A6C27F0BA1200C41198 /* VerificationViewController.swift */; };
-		A9BB795527F9FBCC00F98A22 /* CodeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB795427F9FBCC00F98A22 /* CodeTextField.swift */; };
 		A9C236C927F0563B00156DBE /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C236C427F0563A00156DBE /* LoginViewController.swift */; };
 		A9C236CB27F0563B00156DBE /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C236C627F0563B00156DBE /* MessageViewController.swift */; };
 		A9C236CC27F0563B00156DBE /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C236C727F0563B00156DBE /* RegisterViewController.swift */; };
@@ -54,7 +53,6 @@
 		A9667D4A27F1882F008A779E /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		A970FFFF27F771AD000FCE58 /* NewConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationTableViewCell.swift; sourceTree = "<group>"; };
 		A97D7A6C27F0BA1200C41198 /* VerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewController.swift; sourceTree = "<group>"; };
-		A9BB795427F9FBCC00F98A22 /* CodeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeTextField.swift; sourceTree = "<group>"; };
 		A9C236C427F0563A00156DBE /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		A9C236C627F0563B00156DBE /* MessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
 		A9C236C727F0563B00156DBE /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
@@ -142,7 +140,6 @@
 				A9C236C427F0563A00156DBE /* LoginViewController.swift */,
 				A97D7A6C27F0BA1200C41198 /* VerificationViewController.swift */,
 				A9C236C727F0563B00156DBE /* RegisterViewController.swift */,
-				A9BB795427F9FBCC00F98A22 /* CodeTextField.swift */,
 			);
 			path = LoginRegistration;
 			sourceTree = "<group>";
@@ -327,7 +324,6 @@
 				A90ADA4B27F2034700C4066D /* SenderModel.swift in Sources */,
 				A9667D4B27F1882F008A779E /* DatabaseManager.swift in Sources */,
 				A90ADA4927F2030400C4066D /* MessageModel.swift in Sources */,
-				A9BB795527F9FBCC00F98A22 /* CodeTextField.swift in Sources */,
 				A903927C27F052BE001E7345 /* SceneDelegate.swift in Sources */,
 				A9667D4727F1697D008A779E /* AuthManager.swift in Sources */,
 				A9667D4927F1878E008A779E /* UserModel.swift in Sources */,
