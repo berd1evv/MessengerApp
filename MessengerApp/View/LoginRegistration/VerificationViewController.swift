@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import JGProgressHUD
+import SnapKit
 
 class VerificationViewController: UIViewController {
     
@@ -117,12 +118,12 @@ class VerificationViewController: UIViewController {
         stack.spacing = 10.0
         stack.alignment = .fill
         stack.distribution = .fillEqually
-        [self.codeField1,
-         self.codeField2,
-         self.codeField3,
-         self.codeField4,
-         self.codeField5,
-         self.codeField6].forEach { stack.addArrangedSubview($0) }
+        [codeField1,
+         codeField2,
+         codeField3,
+         codeField4,
+         codeField5,
+         codeField6].forEach { stack.addArrangedSubview($0) }
         return stack
     }()
     

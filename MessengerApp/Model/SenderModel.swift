@@ -8,7 +8,7 @@
 import Foundation
 import MessageKit
 
-struct Sender: SenderType {
+struct SenderModel: SenderType {
     var photoURL: String?
     var senderId: String
     var displayName: String

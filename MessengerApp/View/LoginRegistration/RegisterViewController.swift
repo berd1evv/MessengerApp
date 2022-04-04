@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import JGProgressHUD
+import SnapKit
 
 class RegisterViewController: UIViewController {
     
@@ -123,15 +124,15 @@ class RegisterViewController: UIViewController {
         
         let number = UserDefaults.standard.string(forKey: "phone") ?? ""
         
-        let user = User(firstName: firstName,
+        let user = UserModel(firstName: firstName,
                         lastName: lastName,
                         email: email,
                         phone: number)
 
         
-        DatabaseManager.shared.insertUserFirestore(with: user) { success in
+        DatabaseManager.shared.insertUserFirestore(with: user) { [weak self] success in
             if success {
-                guard let image = self.imageView.image, let data = image.pngData() else {
+                guard let image = self?.imageView.image, let data = image.pngData() else {
                     return
                 }
                 let fileName = user.profilePictureFileName
@@ -147,9 +148,9 @@ class RegisterViewController: UIViewController {
         }
         
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.spinner.dismiss()
-            self.navigationController?.pushViewController(TabBarViewController(), animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.spinner.dismiss()
+            self?.navigationController?.pushViewController(TabBarViewController(), animated: true)
         }
         
     }

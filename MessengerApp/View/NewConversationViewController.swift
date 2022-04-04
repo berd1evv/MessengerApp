@@ -7,6 +7,7 @@
 
 import UIKit
 import JGProgressHUD
+import SnapKit
 
 class NewConversationViewController: UIViewController {
     
@@ -88,13 +89,13 @@ class NewConversationViewController: UIViewController {
     
     func filterOutCurrentUser() {
         let phoneNumber = UserDefaults.standard.string(forKey: "phone") ?? ""
-        let results: [[String:String]] = self.users.filter { filter in
+        let results: [[String:String]] = users.filter { filter in
             guard let number = filter["phone"], number != phoneNumber else {
                 return false
             }
             return true
         }
-        self.users = results
+        users = results
     }
     
     @objc func doneButtonTapped() {
@@ -135,12 +136,12 @@ extension NewConversationViewController: UISearchBarDelegate {
         }
         results.removeAll()
         spinner.show(in: view)
-        self.filterUsers(with: text)
+        filterUsers(with: text)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
-        self.label.isHidden = false
+        label.isHidden = false
         searchBar.text = ""
         tableView.reloadData()
     }
@@ -155,9 +156,9 @@ extension NewConversationViewController: UISearchBarDelegate {
         }
         let phoneNumber = UserDefaults.standard.string(forKey: "phone") ?? ""
         
-        self.spinner.dismiss(animated: true)
+        spinner.dismiss(animated: true)
         
-        let results: [[String:String]] = self.users.filter { filter in
+        let results: [[String:String]] = users.filter { filter in
             guard let number = filter["phone"], number != phoneNumber else {
                 return false
             }
@@ -180,12 +181,12 @@ extension NewConversationViewController: UISearchBarDelegate {
     
     func updateUI() {
         if results.isEmpty {
-            self.label.isHidden = false
-            self.tableView.isHidden = true
+            label.isHidden = false
+            tableView.isHidden = true
         } else {
-            self.label.isHidden = true
-            self.tableView.isHidden = false
-            self.tableView.reloadData()
+            label.isHidden = true
+            tableView.isHidden = false
+            tableView.reloadData()
         }
     }
 }

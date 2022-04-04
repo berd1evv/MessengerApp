@@ -18,6 +18,7 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        title = "Profile"
         
         view.addSubview(tableView)
         tableView.delegate = self
@@ -68,7 +69,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
                                                 style: .cancel,
                                                 handler: nil))
             
-            self.present(actionSheet, animated: true)
+            present(actionSheet, animated: true)
             
         } else if data[indexPath.row] == "Account" {
             let firstName = UserDefaults.standard.string(forKey: "firstName")

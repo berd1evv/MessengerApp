@@ -32,11 +32,19 @@ class ChatsTableViewCell: UITableViewCell {
         return label
     }()
     
+    let userMessageSentDate: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(profileImageView)
         addSubview(userNameLabel)
         addSubview(userMessageLabel)
+        addSubview(userMessageSentDate)
     }
     
     required init?(coder: NSCoder) {
@@ -47,9 +55,10 @@ class ChatsTableViewCell: UITableViewCell {
         setUpConstraints()
     }
     
-    func getData(with model: Conversation) {
+    func getData(with model: ConversationModel) {
         userNameLabel.text = model.name
         userMessageLabel.text = model.latestMessage.message
+        userMessageSentDate.text = model.latestMessage.date
         
         let path = "images/\(model.otherUserPhone)_profile_picture.png"
         StorageManger.shared.downloadURL(for: path) { [weak self] result in
@@ -82,6 +91,11 @@ class ChatsTableViewCell: UITableViewCell {
             make.left.equalTo(profileImageView.snp.right).offset(10)
             make.width.equalToSuperview().offset(-90)
             make.height.equalTo(20)
+        }
+        
+        userMessageSentDate.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().offset(-5)
+            make.right.equalToSuperview().offset(-5)
         }
     }
     

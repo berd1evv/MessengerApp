@@ -16,12 +16,12 @@ class AuthManager {
     var verificationId: String?
     
     func startAuth(phoneNumber: String, completion: @escaping (Bool) -> ()) {
-        PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { verificationId, error in
+        PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { [weak self] verificationId, error in
             guard let verificationId = verificationId, error == nil else {
                 completion(false)
                 return
             }
-            self.verificationId = verificationId
+            self?.verificationId = verificationId
             completion(true)
         }
     }

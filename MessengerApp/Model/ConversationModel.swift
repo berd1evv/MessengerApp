@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Conversation {
+struct ConversationModel {
     let id: String
     let name: String
     let otherUserPhone: String

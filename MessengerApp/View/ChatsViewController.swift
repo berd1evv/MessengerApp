@@ -8,11 +8,12 @@
 import UIKit
 import Firebase
 import SDWebImage
+import SnapKit
 
 class ChatsViewController: UIViewController {
     
     let tableView = UITableView()
-    var conversations = [Conversation]()
+    var conversations = [ConversationModel]()
     
     let plusButton: UIButton = {
         let button = UIButton()
@@ -50,7 +51,7 @@ class ChatsViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        tableView.frame = view.frame
+        tableView.frame = view.bounds
     }
     
     func saveUserData() {
@@ -67,12 +68,12 @@ class ChatsViewController: UIViewController {
     }
     
     func startListeningConversations() {
-        DatabaseManager.shared.getAllConversation(for: (Auth.auth().currentUser?.phoneNumber)!) { result in
+        DatabaseManager.shared.getAllConversation(for: (Auth.auth().currentUser?.phoneNumber)!) { [weak self] result in
             switch result {
             case .success(let conversations):
-                self.conversations = conversations
+                self?.conversations = conversations
                 DispatchQueue.main.async {
-                    self.tableView.reloadData()
+                    self?.tableView.reloadData()
                 }
             case .failure(let error):
                 print(error)
@@ -124,6 +125,7 @@ extension ChatsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ChatsTableViewCell
         cell.getData(with: conversations[indexPath.row])
+        print(conversations[indexPath.row].latestMessage.date)
         return cell
     }
     

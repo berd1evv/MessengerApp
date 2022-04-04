@@ -15,6 +15,9 @@ class MessageViewController: MessagesViewController {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .long
+        formatter.dateFormat = "MM-dd-yy HH:mm"
+        formatter.amSymbol = "AM"
+        formatter.pmSymbol = "PM"
         formatter.locale = .current
         return formatter
     }()
@@ -22,17 +25,17 @@ class MessageViewController: MessagesViewController {
     let otherUserPhone: String
     let conversationId: String?
     var isNewConversation = false
-    
+        
     var senderPhotoURL: URL?
     var otherUserURL: URL?
     
-    var messages = [Message]()
+    var messages = [MessageModel]()
     
-    var selfSender: Sender? {
+    var selfSender: SenderModel? {
         guard let phone = UserDefaults.standard.string(forKey: "phone") else {
             return nil
         }
-        return Sender(photoURL: nil,
+        return SenderModel(photoURL: nil,
                senderId: phone,
                displayName: "John Snow")
     }
@@ -41,9 +44,6 @@ class MessageViewController: MessagesViewController {
         self.otherUserPhone = phone
         self.conversationId = id
         super.init(nibName: nil, bundle: nil)
-        if let conversationId = conversationId {
-            listenForMessages(id: conversationId)
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -61,7 +61,14 @@ class MessageViewController: MessagesViewController {
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
         
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        messagesCollectionView.scrollToBottom(animated: true)
+        if let conversationId = conversationId {
+            listenForMessages(id: conversationId)
+        }
     }
     
     func listenForMessages(id: String) {
@@ -85,22 +92,22 @@ class MessageViewController: MessagesViewController {
 }
 
 extension MessageViewController: InputBarAccessoryViewDelegate {
+    
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        guard !text.replacingOccurrences(of: " ", with: "").isEmpty, let selfSender = self.selfSender else {
+        guard !text.replacingOccurrences(of: " ", with: "").isEmpty, let selfSender = selfSender else {
             return
         }
         messageInputBar.inputTextView.text = nil
-        let message = Message(sender: selfSender,
+        let message = MessageModel(sender: selfSender,
                               messageId: createMessageId(),
                               sentDate: Date(),
                               kind: .text(text))
         DatabaseManager.shared.createNewConversations(with: otherUserPhone, name: self.title ?? "User", firstMessage: message) {[weak self] success in
             if success {
-                print("message sent ")
+                self?.listenForMessages(id: self?.createMessageId() ?? "")
                 self?.messagesCollectionView.reloadData()
             }
         }
-        
     }
     
     func createMessageId() -> String {
@@ -142,7 +149,7 @@ extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, Mes
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
         let sender = message.sender
         if sender.senderId == selfSender?.senderId {
-            if let currentUserImageURL = self.senderPhotoURL {
+            if let currentUserImageURL = senderPhotoURL {
                 avatarView.sd_setImage(with: currentUserImageURL, completed: nil)
             } else {
                 let phone = UserDefaults.standard.string(forKey: "phone") ?? ""
@@ -160,7 +167,7 @@ extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, Mes
                 }
             }
         } else {
-            if let otherUserImageURL = self.otherUserURL {
+            if let otherUserImageURL = otherUserURL {
                 avatarView.sd_setImage(with: otherUserImageURL, completed: nil)
             } else {
                 let path = "images/" + otherUserPhone + "_profile_picture.png"

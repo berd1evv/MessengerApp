@@ -24,7 +24,7 @@ final class DatabaseManager {
         }
     }
     
-    func insertUserFirestore(with user: User, completion: @escaping (Bool) -> ()) {
+    func insertUserFirestore(with user: UserModel, completion: @escaping (Bool) -> ()) {
         db.collection("users").document(user.phone).setData([
             "first_name" : user.firstName,
             "last_name" : user.lastName,
@@ -74,7 +74,7 @@ final class DatabaseManager {
 // MARK: Conversations
 extension DatabaseManager {
     //Creates new conversations
-    func createNewConversations(with otherUserPhone: String, name: String, firstMessage: Message, completion: @escaping (Bool) -> ()) {
+    func createNewConversations(with otherUserPhone: String, name: String, firstMessage: MessageModel, completion: @escaping (Bool) -> ()) {
         let phone = UserDefaults.standard.string(forKey: "phone") ?? ""
         let firstName = UserDefaults.standard.string(forKey: "firstName") ?? ""
         let lastName = UserDefaults.standard.string(forKey: "lastName") ?? ""
@@ -122,7 +122,7 @@ extension DatabaseManager {
                                    completion: completion)
     }
     
-    private func finishCreatingConversation(name: String, conversationID: String, firstMessage: Message, completion: @escaping (Bool) -> Void) {
+    private func finishCreatingConversation(name: String, conversationID: String, firstMessage: MessageModel, completion: @escaping (Bool) -> Void) {
         let messageDate = firstMessage.sentDate
         let dateString = MessageViewController.dateFormatter.string(from: messageDate)
         
@@ -157,17 +157,17 @@ extension DatabaseManager {
     }
     
     //Fetches and returns all conversations
-    func getAllConversation(for phone: String, completion: @escaping (Result<[Conversation], Error>) -> ()) {
+    func getAllConversation(for phone: String, completion: @escaping (Result<[ConversationModel], Error>) -> ()) {
         db.collection("users").document(phone).collection("conversation").order(by: "date_for_order", descending: true).addSnapshotListener { querySnapshot, error in
             guard error == nil else {
                 completion(.failure(error!))
                 return
             }
             if let snapshotDocuments = querySnapshot?.documents {
-                var conversation: [Conversation] = []
+                var conversation: [ConversationModel] = []
                 for doc in snapshotDocuments {
                     let latestMessage = doc.data()["latestMessage"] as! [String: Any]
-                    conversation.append(Conversation(id: doc.data()["id"] as! String,
+                    conversation.append(ConversationModel(id: doc.data()["id"] as! String,
                                                      name: doc.data()["name"] as! String,
                                                      otherUserPhone: doc.data()["other_user_phone"] as! String,
                                                      latestMessage: LatestMessage(date: latestMessage["date"] as! String,
@@ -178,14 +178,14 @@ extension DatabaseManager {
         }
     }
     //Gets all messages for a given conversation
-    func getAllMessagesForConversation(with id: String, completion: @escaping (Result<[Message], Error>) -> ()) {
+    func getAllMessagesForConversation(with id: String, completion: @escaping (Result<[MessageModel], Error>) -> ()) {
         db.collection("conversations").document("messages").collection(id).order(by: "date_for_order").addSnapshotListener { querySnapshot, error in
             guard error == nil else {
                 completion(.failure(error!))
                 return
             }
             
-            var conversations: [Message] = []
+            var conversations: [MessageModel] = []
             
             for doc in querySnapshot!.documents {
                 let mess = doc.data()
@@ -199,11 +199,11 @@ extension DatabaseManager {
                           return
                       }
                 
-                let sender = Sender(photoURL: nil,
+                let sender = SenderModel(photoURL: nil,
                                     senderId: senderPhone,
                                     displayName: name)
                 
-                conversations.append(Message(sender: sender,
+                conversations.append(MessageModel(sender: sender,
                                                   messageId: messageId,
                                                   sentDate: date,
                                                   kind: .text(content)))

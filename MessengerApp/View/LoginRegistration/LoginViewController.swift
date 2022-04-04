@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import JGProgressHUD
+import SnapKit
 
 class LoginViewController: UIViewController {
     
