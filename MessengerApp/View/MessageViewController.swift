@@ -22,6 +22,19 @@ class MessageViewController: MessagesViewController {
         return formatter
     }()
     
+    private let viewModel: MessageViewModelProtocol
+    
+    init(vm: MessageViewModelProtocol = MessageViewModel(), with phone: String, id: String?) {
+        viewModel = vm
+        self.otherUserPhone = phone
+        self.conversationId = id
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+    }
+    
     let otherUserPhone: String
     let conversationId: String?
     var isNewConversation = false
@@ -38,16 +51,6 @@ class MessageViewController: MessagesViewController {
         return SenderModel(photoURL: nil,
                senderId: phone,
                displayName: "John Snow")
-    }
-    
-    init(with phone: String, id: String?) {
-        self.otherUserPhone = phone
-        self.conversationId = id
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -99,35 +102,17 @@ extension MessageViewController: InputBarAccessoryViewDelegate {
         }
         messageInputBar.inputTextView.text = nil
         let message = MessageModel(sender: selfSender,
-                              messageId: createMessageId(),
+                                   messageId: viewModel.createMessageId(otherUserPhone: otherUserPhone),
                               sentDate: Date(),
                               kind: .text(text))
         DatabaseManager.shared.createNewConversations(with: otherUserPhone, name: self.title ?? "User", firstMessage: message) {[weak self] success in
             if success {
-                self?.listenForMessages(id: self?.createMessageId() ?? "")
+                self?.listenForMessages(id: self?.viewModel.createMessageId(otherUserPhone: self!.otherUserPhone) ?? "")
                 self?.messagesCollectionView.reloadData()
             }
         }
     }
     
-    func createMessageId() -> String {
-        guard let phone = UserDefaults.standard.string(forKey: "phone") else {
-            return ""
-        }
-        
-        let phoneId = phone.replacingOccurrences(of: "+", with: "") + otherUserPhone.replacingOccurrences(of: "+", with: "")
-        var arr: [String] = []
-        for i in phoneId {
-            arr.append(String(i))
-        }
-        let intArray = arr.sorted().map { Int($0)!}
-
-        var myString = ""
-        _ = intArray.map{ myString = myString + "\($0)" }
-        
-        let id = myString
-        return id
-    }
 }
 
 extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {

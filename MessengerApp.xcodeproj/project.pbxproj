@@ -32,6 +32,7 @@
 		A9E99B6E28048E8E008B2F4F /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B6D28048E8E008B2F4F /* RegisterViewModel.swift */; };
 		A9E99B7028049249008B2F4F /* ChatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B6F28049249008B2F4F /* ChatsViewModel.swift */; };
 		A9E99B7228049499008B2F4F /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B7128049499008B2F4F /* NewConversationViewModel.swift */; };
+		A9E99B7428049660008B2F4F /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B7328049660008B2F4F /* MessageViewModel.swift */; };
 		C2315C5E74D08498FCD24739 /* Pods_MessengerApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BD08D55025C8A676966F2D1 /* Pods_MessengerApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,7 @@
 		A9E99B6D28048E8E008B2F4F /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		A9E99B6F28049249008B2F4F /* ChatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsViewModel.swift; sourceTree = "<group>"; };
 		A9E99B7128049499008B2F4F /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewModel.swift; sourceTree = "<group>"; };
+		A9E99B7328049660008B2F4F /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
 		AFC362FB2994ACB0C8494E84 /* Pods-MessengerApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessengerApp.debug.xcconfig"; path = "Target Support Files/Pods-MessengerApp/Pods-MessengerApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -130,6 +132,7 @@
 				A9E99B6D28048E8E008B2F4F /* RegisterViewModel.swift */,
 				A9E99B6F28049249008B2F4F /* ChatsViewModel.swift */,
 				A9E99B7128049499008B2F4F /* NewConversationViewModel.swift */,
+				A9E99B7328049660008B2F4F /* MessageViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 				A9667D4927F1878E008A779E /* UserModel.swift in Sources */,
 				A907581F27F23579002DE093 /* StorageManager.swift in Sources */,
 				A970000027F771AD000FCE58 /* NewConversationTableViewCell.swift in Sources */,
+				A9E99B7428049660008B2F4F /* MessageViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

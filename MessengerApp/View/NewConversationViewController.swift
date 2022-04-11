@@ -12,11 +12,17 @@ import SnapKit
 class NewConversationViewController: UIViewController {
     
     var completion: (([String: String]) -> ())?
-    var users = [[String:String]]()
-    var results = [[String:String]]()
     
-    var hasFetched = false
-    var isSearching = false
+    private var viewModel: NewConversationProtocol
+    
+    init(vm: NewConversationProtocol = NewConversationViewModel()) {
+        viewModel = vm
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+    }
     
     let spinner = JGProgressHUD(style: .dark)
     
@@ -66,37 +72,13 @@ class NewConversationViewController: UIViewController {
         view.addSubview(tableView)
         
         setUpConstraints()
-        getUsers()
+        viewModel.getUsers(tableView: tableView)
     }
     
     override func viewDidLayoutSubviews() {
         tableView.frame = CGRect(x: 0, y: 90, width: view.frame.width, height: view.frame.height)
     }
     
-    func getUsers() {
-        DatabaseManager.shared.getAllUsersFirestore { [weak self] result in
-            switch result {
-            case .failure(let error):
-                print("Failed to get users: \(error)")
-            case .success(let usersCollection):
-                self?.hasFetched = true
-                self?.users = usersCollection as! [[String:String]]
-                self?.filterOutCurrentUser()
-                self?.tableView.reloadData()
-            }
-        }
-    }
-    
-    func filterOutCurrentUser() {
-        let phoneNumber = UserDefaults.standard.string(forKey: "phone") ?? ""
-        let results: [[String:String]] = users.filter { filter in
-            guard let number = filter["phone"], number != phoneNumber else {
-                return false
-            }
-            return true
-        }
-        users = results
-    }
     
     @objc func doneButtonTapped() {
         dismiss(animated: true, completion: nil)
@@ -134,13 +116,13 @@ extension NewConversationViewController: UISearchBarDelegate {
         guard let text = searchBar.text, !text.replacingOccurrences(of: " ", with: "").isEmpty else {
             return
         }
-        results.removeAll()
+        viewModel.results.removeAll()
         spinner.show(in: view)
-        filterUsers(with: text)
+        viewModel.filterUsers(with: text, spinner: spinner, label: label, tableView: tableView)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        isSearching = false
+        viewModel.isSearching = false
         label.isHidden = false
         searchBar.text = ""
         tableView.reloadData()
@@ -150,65 +132,26 @@ extension NewConversationViewController: UISearchBarDelegate {
         searchBar.showsCancelButton = false
     }
     
-    func filterUsers(with term: String) {
-        guard hasFetched else {
-            return
-        }
-        let phoneNumber = UserDefaults.standard.string(forKey: "phone") ?? ""
-        
-        spinner.dismiss(animated: true)
-        
-        let results: [[String:String]] = users.filter { filter in
-            guard let number = filter["phone"], number != phoneNumber else {
-                return false
-            }
-            
-            guard let firstName = filter["first_name"]?.lowercased() else {
-                return false
-            }
-            
-            guard let lastName = filter["last_name"]?.lowercased() else {
-                return false
-            }
-            
-            return firstName.hasPrefix(term.lowercased()) || lastName.hasPrefix(term.lowercased())
-        }
-        self.results = results
-        isSearching = true
-        
-        updateUI()
-    }
-    
-    func updateUI() {
-        if results.isEmpty {
-            label.isHidden = false
-            tableView.isHidden = true
-        } else {
-            label.isHidden = true
-            tableView.isHidden = false
-            tableView.reloadData()
-        }
-    }
 }
 
 extension NewConversationViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isSearching {
-            return results.count
+        if viewModel.isSearching {
+            return viewModel.results.count
         } else {
-            return users.count
+            return viewModel.users.count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NewConversationTableViewCell
-        if isSearching {
-            let name = results[indexPath.row]["first_name"]! + " " + results[indexPath.row]["last_name"]!
-            let otherUserPhone = results[indexPath.row]["phone"]
+        if viewModel.isSearching {
+            let name = viewModel.results[indexPath.row]["first_name"]! + " " + viewModel.results[indexPath.row]["last_name"]!
+            let otherUserPhone = viewModel.results[indexPath.row]["phone"]
             cell.getData(name: name, otherUserPhone: otherUserPhone!)
         } else {
-            let name = users[indexPath.row]["first_name"]! + " " + users[indexPath.row]["last_name"]!
-            let otherUserPhone = users[indexPath.row]["phone"]
+            let name = viewModel.users[indexPath.row]["first_name"]! + " " + viewModel.users[indexPath.row]["last_name"]!
+            let otherUserPhone = viewModel.users[indexPath.row]["phone"]
             cell.getData(name: name, otherUserPhone: otherUserPhone!)
         }
         return cell
@@ -216,13 +159,13 @@ extension NewConversationViewController: UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if isSearching {
-            let targetUserData = results[indexPath.row]
+        if viewModel.isSearching {
+            let targetUserData = viewModel.results[indexPath.row]
             dismiss(animated: true) { [weak self] in
                 self?.completion?(targetUserData)
             }
         } else {
-            let targetUserData = users[indexPath.row]
+            let targetUserData = viewModel.users[indexPath.row]
             dismiss(animated: true) { [weak self] in
                 self?.completion?(targetUserData)
             }
