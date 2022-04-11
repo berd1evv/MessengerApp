@@ -6,14 +6,22 @@
 //
 
 import UIKit
-import Firebase
-import SDWebImage
 import SnapKit
 
 class ChatsViewController: UIViewController {
     
     let tableView = UITableView()
-    var conversations = [ConversationModel]()
+    
+    private let viewModel: ChatsViewModelProtocol
+    
+    init(vm: ChatsViewModelProtocol = ChatsViewModel()) {
+        viewModel = vm
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+    }
     
     let plusButton: UIButton = {
         let button = UIButton()
@@ -40,8 +48,8 @@ class ChatsViewController: UIViewController {
         tableView.dataSource = self
         tableView.register(ChatsTableViewCell.self, forCellReuseIdentifier: "cell")
         
-        startListeningConversations()
-        saveUserData()
+        viewModel.startListeningConversations(tableView: tableView)
+        viewModel.saveUserData()
         
         plusButton.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-30)
@@ -52,33 +60,6 @@ class ChatsViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         tableView.frame = view.bounds
-    }
-    
-    func saveUserData() {
-        DatabaseManager.shared.getCurrentUser { result in
-            switch result {
-            case .failure(let error):
-                print(error)
-            case .success(let success):
-                UserDefaults.standard.set(success["first_name"] as? String, forKey: "firstName")
-                UserDefaults.standard.set(success["last_name"] as? String, forKey: "lastName")
-                UserDefaults.standard.set(success["email"] as? String, forKey: "email")
-            }
-        }
-    }
-    
-    func startListeningConversations() {
-        DatabaseManager.shared.getAllConversation(for: (Auth.auth().currentUser?.phoneNumber)!) { [weak self] result in
-            switch result {
-            case .success(let conversations):
-                self?.conversations = conversations
-                DispatchQueue.main.async {
-                    self?.tableView.reloadData()
-                }
-            case .failure(let error):
-                print(error)
-            }
-        }
     }
     
     
@@ -95,7 +76,7 @@ class ChatsViewController: UIViewController {
             return
         }
         var conversationId = ""
-        for conv in conversations {
+        for conv in viewModel.conversations {
             if conv.otherUserPhone == phone {
                 conversationId = conv.id
             }
@@ -119,20 +100,20 @@ class ChatsViewController: UIViewController {
 
 extension ChatsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return conversations.count
+        return viewModel.conversations.count
     }
         
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ChatsTableViewCell
-        cell.getData(with: conversations[indexPath.row])
-        print(conversations[indexPath.row].latestMessage.date)
+        cell.getData(with: viewModel.conversations[indexPath.row])
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let vc = MessageViewController(with: conversations[indexPath.row].otherUserPhone, id: conversations[indexPath.row].id)
-        vc.title = conversations[indexPath.row].name
+        let vc = MessageViewController(with: viewModel.conversations[indexPath.row].otherUserPhone,
+                                       id: viewModel.conversations[indexPath.row].id)
+        vc.title = viewModel.conversations[indexPath.row].name
         vc.isNewConversation = true
         navigationController?.pushViewController(vc, animated: true)
     }

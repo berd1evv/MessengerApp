@@ -6,13 +6,23 @@
 //
 
 import UIKit
-import FirebaseAuth
 import JGProgressHUD
 import SnapKit
 
 class RegisterViewController: UIViewController {
     
     let spinner = JGProgressHUD(style: .dark)
+    
+    private let viewModel: RegisterViewModelProtocol
+    
+    init(vm: RegisterViewModelProtocol = RegisterViewModel()) {
+        viewModel = vm
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+    }
             
     let imageView: UIImageView = {
         let image = UIImageView()
@@ -129,23 +139,7 @@ class RegisterViewController: UIViewController {
                         email: email,
                         phone: number)
 
-        
-        DatabaseManager.shared.insertUserFirestore(with: user) { [weak self] success in
-            if success {
-                guard let image = self?.imageView.image, let data = image.pngData() else {
-                    return
-                }
-                let fileName = user.profilePictureFileName
-                StorageManger.shared.uploadProfilePicture(with: data, fileName: fileName) { result in
-                    switch result {
-                    case .success(let downloadURL):
-                        UserDefaults.standard.set(downloadURL, forKey: "profile_picture_url")
-                    case .failure(_):
-                        print("Storage manager error")
-                    }
-                }
-            }
-        }
+        viewModel.insertUser(user: user, imageView: imageView)
         
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in

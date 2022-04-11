@@ -29,6 +29,9 @@
 		A9C236CD27F0563B00156DBE /* ChatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C236C827F0563B00156DBE /* ChatsViewController.swift */; };
 		A9C236D227F0571800156DBE /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C236D127F0571800156DBE /* TabBarViewController.swift */; };
 		A9C236D527F0582300156DBE /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C236D427F0582300156DBE /* ProfileViewController.swift */; };
+		A9E99B6E28048E8E008B2F4F /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B6D28048E8E008B2F4F /* RegisterViewModel.swift */; };
+		A9E99B7028049249008B2F4F /* ChatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B6F28049249008B2F4F /* ChatsViewModel.swift */; };
+		A9E99B7228049499008B2F4F /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E99B7128049499008B2F4F /* NewConversationViewModel.swift */; };
 		C2315C5E74D08498FCD24739 /* Pods_MessengerApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BD08D55025C8A676966F2D1 /* Pods_MessengerApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +62,9 @@
 		A9C236C827F0563B00156DBE /* ChatsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatsViewController.swift; sourceTree = "<group>"; };
 		A9C236D127F0571800156DBE /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		A9C236D427F0582300156DBE /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		A9E99B6D28048E8E008B2F4F /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
+		A9E99B6F28049249008B2F4F /* ChatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsViewModel.swift; sourceTree = "<group>"; };
+		A9E99B7128049499008B2F4F /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewModel.swift; sourceTree = "<group>"; };
 		AFC362FB2994ACB0C8494E84 /* Pods-MessengerApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessengerApp.debug.xcconfig"; path = "Target Support Files/Pods-MessengerApp/Pods-MessengerApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -121,6 +127,9 @@
 		A903929727F0552E001E7345 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				A9E99B6D28048E8E008B2F4F /* RegisterViewModel.swift */,
+				A9E99B6F28049249008B2F4F /* ChatsViewModel.swift */,
+				A9E99B7128049499008B2F4F /* NewConversationViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -316,12 +325,15 @@
 				A97D7A6D27F0BA1200C41198 /* VerificationViewController.swift in Sources */,
 				A90ADA4D27F208C400C4066D /* NewConversationViewController.swift in Sources */,
 				A9C236C927F0563B00156DBE /* LoginViewController.swift in Sources */,
+				A9E99B7028049249008B2F4F /* ChatsViewModel.swift in Sources */,
 				A903927A27F052BE001E7345 /* AppDelegate.swift in Sources */,
 				A912BB8227F55DF6006FE6BE /* ConversationModel.swift in Sources */,
+				A9E99B6E28048E8E008B2F4F /* RegisterViewModel.swift in Sources */,
 				A9C236CC27F0563B00156DBE /* RegisterViewController.swift in Sources */,
 				A9C236CD27F0563B00156DBE /* ChatsViewController.swift in Sources */,
 				A9C236D527F0582300156DBE /* ProfileViewController.swift in Sources */,
 				A90ADA4B27F2034700C4066D /* SenderModel.swift in Sources */,
+				A9E99B7228049499008B2F4F /* NewConversationViewModel.swift in Sources */,
 				A9667D4B27F1882F008A779E /* DatabaseManager.swift in Sources */,
 				A90ADA4927F2030400C4066D /* MessageModel.swift in Sources */,
 				A903927C27F052BE001E7345 /* SceneDelegate.swift in Sources */,
