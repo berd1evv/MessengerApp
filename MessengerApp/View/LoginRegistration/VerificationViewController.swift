@@ -127,17 +127,6 @@ class VerificationViewController: UIViewController {
         return stack
     }()
     
-    let verifyButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Verify", for: .normal)
-        button.backgroundColor = .black
-        button.clipsToBounds = true
-        button.layer.cornerRadius = 5
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(didTapVerifyButton), for: .touchUpInside)
-        return button
-    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -146,44 +135,15 @@ class VerificationViewController: UIViewController {
         
         view.addSubview(alertLabel)
         view.addSubview(stackView)
-        view.addSubview(verifyButton)
         
         codeField1.delegate = self
         codeField2.delegate = self
         codeField3.delegate = self
         codeField4.delegate = self
         codeField5.delegate = self
+        codeField6.delegate = self
         
         setUpConstraints()
-    }
-    
-    
-    @objc func didTapVerifyButton() {
-        guard let code = codeField6.text, !code.isEmpty else {
-            if codeField1.text!.isEmpty  {
-                alertLabel.text = "Field should not be empty"
-            }
-            return
-        }
-        spinner.show(in: view)
-        if let text = codeField6.text, !text.isEmpty {
-            let code = codeField1.text! + codeField2.text! + codeField3.text! + codeField4.text! + codeField5.text! + codeField6.text!
-            
-            AuthManager.shared.verifyCode(code: code) { [weak self] success in
-                guard success else { return }
-                DispatchQueue.main.async {
-                    self?.spinner.dismiss()
-                    if self?.destination == true {
-                        let vc = TabBarViewController()
-                        self?.navigationController?.pushViewController(vc, animated: true)
-                    }else {
-                        let vc = RegisterViewController()
-                        self?.navigationController?.pushViewController(vc, animated: true)
-                    }
-                }
-            }
-        }
-        
     }
     
     func setUpConstraints() {
@@ -193,32 +153,19 @@ class VerificationViewController: UIViewController {
         }
         
         stackView.snp.makeConstraints { make in
-            make.top.equalTo(verifyButton.snp.top).offset(-90)
+            make.center.equalToSuperview()
             make.width.equalToSuperview().dividedBy(1.4)
             make.centerX.equalToSuperview()
             make.height.equalTo(40)
-        }
-        
-        verifyButton.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview().dividedBy(1.5)
-            make.height.equalTo(60)
         }
     }
 }
 
 extension VerificationViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if codeField6.text?.count == 1 {
-            didTapVerifyButton()
-        }
-        return true
-    }
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if codeField1.text?.count == 1 {
             codeField2.becomeFirstResponder()
         }
-        
         if codeField2.text?.count == 1 {
             codeField3.becomeFirstResponder()
         }
@@ -232,7 +179,30 @@ extension VerificationViewController: UITextFieldDelegate {
             codeField6.becomeFirstResponder()
         }
         if codeField6.text?.count == 1 {
-            didTapVerifyButton()
+            guard let code = codeField6.text, !code.isEmpty else {
+                if codeField1.text!.isEmpty  {
+                    alertLabel.text = "Field should not be empty"
+                }
+                return
+            }
+            spinner.show(in: view)
+            if let text = codeField6.text, !text.isEmpty {
+                let code = codeField1.text! + codeField2.text! + codeField3.text! + codeField4.text! + codeField5.text! + codeField6.text!
+                
+                AuthManager.shared.verifyCode(code: code) { [weak self] success in
+                    guard success else { return }
+                    DispatchQueue.main.async {
+                        self?.spinner.dismiss()
+                        if self?.destination == true {
+                            let vc = TabBarViewController()
+                            self?.navigationController?.pushViewController(vc, animated: true)
+                        }else {
+                            let vc = RegisterViewController()
+                            self?.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -69,7 +69,6 @@ class LoginViewController: UIViewController {
         }
         
         let phoneNumber = phone.replacingOccurrences(of: " ", with: "")
-        
         UserDefaults.standard.set(phoneNumber, forKey: "phone")
         spinner.show(in: view)
         

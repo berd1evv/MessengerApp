@@ -15,11 +15,15 @@ class MessageViewController: MessagesViewController {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .long
-        formatter.dateFormat = "MM-dd-yy HH:mm"
-        formatter.amSymbol = "AM"
-        formatter.pmSymbol = "PM"
+        formatter.dateFormat = "MM/dd/yy HH:mm:ss"
         formatter.locale = .current
         return formatter
+    }()
+    
+    private let profileImage: UIImageView = {
+        let img = UIImageView()
+        img.image = UIImage(systemName: "person")
+        return img
     }()
     
     private let viewModel: MessageViewModelProtocol
@@ -42,7 +46,7 @@ class MessageViewController: MessagesViewController {
     var senderPhotoURL: URL?
     var otherUserURL: URL?
     
-    var messages = [MessageModel]()
+    
     
     var selfSender: SenderModel? {
         guard let phone = UserDefaults.standard.string(forKey: "phone") else {
@@ -56,12 +60,14 @@ class MessageViewController: MessagesViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        //navigationItem.titleView = profileImage
         navigationController?.navigationBar.backItem?.title = ""
         navigationController?.navigationBar.prefersLargeTitles = false
         
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
+        messagesCollectionView.messageCellDelegate = self
         messageInputBar.delegate = self
         
     }
@@ -70,28 +76,9 @@ class MessageViewController: MessagesViewController {
         super.viewDidAppear(animated)
         messagesCollectionView.scrollToBottom(animated: true)
         if let conversationId = conversationId {
-            listenForMessages(id: conversationId)
+            viewModel.listenForMessages(id: conversationId, messagesCollectionView: messagesCollectionView)
         }
     }
-    
-    func listenForMessages(id: String) {
-        DatabaseManager.shared.getAllMessagesForConversation(with: id) { [weak self] result in
-            switch result {
-            case .failure(let error):
-                print("Failed to get messages:\(error)")
-            case .success(let messages):
-                guard !messages.isEmpty else {
-                    return
-                }
-                print("Successfully loaded messages")
-                DispatchQueue.main.async {
-                    self?.messages = messages
-                    self?.messagesCollectionView.reloadData()
-                }
-            }
-        }
-    }
-
 }
 
 extension MessageViewController: InputBarAccessoryViewDelegate {
@@ -107,7 +94,8 @@ extension MessageViewController: InputBarAccessoryViewDelegate {
                               kind: .text(text))
         DatabaseManager.shared.createNewConversations(with: otherUserPhone, name: self.title ?? "User", firstMessage: message) {[weak self] success in
             if success {
-                self?.listenForMessages(id: self?.viewModel.createMessageId(otherUserPhone: self!.otherUserPhone) ?? "")
+                self?.viewModel.listenForMessages(id: self?.viewModel.createMessageId(otherUserPhone: self!.otherUserPhone) ?? "",
+                                                  messagesCollectionView: self!.messagesCollectionView)
                 self?.messagesCollectionView.reloadData()
             }
         }
@@ -115,7 +103,7 @@ extension MessageViewController: InputBarAccessoryViewDelegate {
     
 }
 
-extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
+extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate, MessageCellDelegate {
     public func currentSender() -> SenderType {
         if let sender = selfSender {
             return sender
@@ -124,11 +112,18 @@ extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, Mes
     }
     
     public func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
-        return  messages[indexPath.section]
+        return  viewModel.messages[indexPath.section]
     }
     
     public func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return messages.count
+        return viewModel.messages.count
+    }
+    
+    func didTapMessage(in cell: MessageCollectionViewCell) {
+        let indexPath = messagesCollectionView.indexPath(for: cell)
+        print(viewModel.messages[indexPath!.section].sentDate)
+        let interaction = UIContextMenuInteraction(delegate: self)
+        cell.addInteraction(interaction)
     }
     
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
@@ -170,4 +165,36 @@ extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, Mes
             }
         }
     }
+}
+
+extension MessageViewController: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(
+        _ interaction: UIContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint)
+    -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil,
+            actionProvider: { _ in
+                let removeMessages = self.removeMessagesAction()
+                let children = [removeMessages]
+
+                return UIMenu(title: "", children: children)
+            })
+    }
+    
+    func removeMessagesAction() -> UIAction {
+      let removeMessages = UIMenuElement.Attributes.destructive
+
+      let deleteImage = UIImage(systemName: "trash")
+      
+      return UIAction(
+        title: "Delete a message",
+        image: deleteImage,
+        identifier: nil,
+        attributes: removeMessages) { _ in
+          print("Message is deleted")
+        }
+    }
+
 }

@@ -39,7 +39,6 @@ class ChatsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         title = "Chats"
-        navigationController?.navigationBar.prefersLargeTitles = true
         
         view.addSubview(tableView)
         view.addSubview(plusButton)
@@ -56,6 +55,11 @@ class ChatsViewController: UIViewController {
             make.right.equalToSuperview().offset(-10)
             make.width.height.equalTo(50)
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     override func viewDidLayoutSubviews() {

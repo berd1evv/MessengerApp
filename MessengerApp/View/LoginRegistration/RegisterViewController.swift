@@ -72,6 +72,7 @@ class RegisterViewController: UIViewController {
         text.autocorrectionType = .no
         text.autocapitalizationType = .none
         text.returnKeyType = .continue
+        text.keyboardType = .emailAddress
         text.translatesAutoresizingMaskIntoConstraints = false
         text.clipsToBounds = true
         text.layer.cornerRadius = 5
@@ -110,7 +111,17 @@ class RegisterViewController: UIViewController {
         imageView.isUserInteractionEnabled = true
         imageView.addGestureRecognizer(gesture)
         
+        
         setUpConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        spinner.show(in: view)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.spinner.dismiss(animated: true)
+        }
     }
     
     

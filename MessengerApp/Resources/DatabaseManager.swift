@@ -56,11 +56,12 @@ final class DatabaseManager {
     
     func getCurrentUser(completion: @escaping(Result<[String:Any],Error>) -> ()) {
         db.collection("users").document(Auth.auth().currentUser?.phoneNumber ?? "0").addSnapshotListener { querySnapshot, error in
-            guard error == nil else {
+            guard error == nil, let data = querySnapshot?.data() else {
                 completion(.failure(DatabaseErrors.failedToFetch))
                 return
             }
-            completion(.success(((querySnapshot?.data())!)))
+            
+            completion(.success(data))
         }
     }
     
@@ -145,7 +146,6 @@ extension DatabaseManager {
             "is_read": false,
             "name": name
         ]
-        
         
         db.collection("conversations").document("messages").collection(conversationID).addDocument(data: collectionMessage) { error in
             guard error == nil else {

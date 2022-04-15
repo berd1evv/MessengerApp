@@ -12,8 +12,17 @@ import SDWebImage
 class ProfileViewController: UIViewController {
     
     let tableView = UITableView()
-    let data = ["Account", "Log out"]
-    var currentUser: [String:Any]?
+    
+    private let viewModel: ProfileViewModelProtocol
+    
+    init(vm: ProfileViewModelProtocol = ProfileViewModel()) {
+        viewModel = vm
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,12 +43,12 @@ class ProfileViewController: UIViewController {
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
+        return viewModel.data.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
-        cell.textLabel?.text = data[indexPath.row]
+        cell.textLabel?.text = viewModel.data[indexPath.row]
         if cell.textLabel?.text == "Log out" {
             cell.textLabel?.textColor = .red
             cell.imageView?.image = UIImage(systemName: "rectangle.portrait.and.arrow.right.fill")
@@ -51,7 +60,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if data[indexPath.row] == "Log out" {
+        if viewModel.data[indexPath.row] == "Log out" {
             let actionSheet = UIAlertController(title: "Are you sure you want to log out?",
                                                 message: "",
                                                 preferredStyle: .actionSheet)
@@ -71,40 +80,14 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             
             present(actionSheet, animated: true)
             
-        } else if data[indexPath.row] == "Account" {
-            let firstName = UserDefaults.standard.string(forKey: "firstName")
-            let lastName = UserDefaults.standard.string(forKey: "lastName")
-            let email = UserDefaults.standard.string(forKey: "email")
-            let phone = UserDefaults.standard.string(forKey: "phone") ?? ""
-            
-            let fileName = phone + "_profile_picture.png"
-            let path = "images/" + fileName
-            
-            let vc = RegisterViewController()
-            
-            StorageManger.shared.downloadURL(for: path) { result in
-                switch result {
-                case .success(let url):
-                    vc.imageView.sd_setImage(with: url, completed: nil)
-                case .failure(let error):
-                    print("Failed to get download: \(error)")
-                }
-            }
-            
-            vc.firstName.text = firstName
-            vc.lastName.text = lastName
-            vc.email.text = email
-            vc.registrationButton.setTitle("Save", for: .normal)
-            navigationController?.pushViewController(vc, animated: true)
+        } else if viewModel.data[indexPath.row] == "Account" {
+            viewModel.setAccountPicture()
+            navigationController?.pushViewController(viewModel.vc, animated: true)
         }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 100))
-        
-        let phone = UserDefaults.standard.string(forKey: "phone") ?? ""
-        let fileName = phone + "_profile_picture.png"
-        let path = "images/" + fileName
         
         let image = UIImageView()
         image.frame = CGRect(x: 20, y: 0, width: 90, height: 90)
@@ -115,19 +98,12 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         image.layer.borderWidth = 1
         image.contentMode = .scaleAspectFit
         
-        StorageManger.shared.downloadURL(for: path) { result in
-            switch result {
-            case .success(let url):
-                image.sd_setImage(with: url, completed: nil)
-            case .failure(let error):
-                print("Failed to get download: \(error)")
-            }
-        }
+        viewModel.setUpProfilePicture(image: image)
         
         let label = UILabel()
         let firstName = UserDefaults.standard.string(forKey: "firstName")
         let lastName = UserDefaults.standard.string(forKey: "lastName")
-        label.text = "\(firstName!) \(lastName!)"
+        label.text = "\(firstName ?? "Name") \(lastName ?? "Last Name")"
         label.font = .systemFont(ofSize: 20)
         label.frame = CGRect(x: 120, y: 10, width: 180, height: 40)
         
