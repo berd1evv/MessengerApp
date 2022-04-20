@@ -32,6 +32,7 @@ class ProfileViewController: UIViewController {
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.isScrollEnabled = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
     }
     

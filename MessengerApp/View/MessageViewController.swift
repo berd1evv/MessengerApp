@@ -69,7 +69,6 @@ class MessageViewController: MessagesViewController {
         messagesCollectionView.messagesDisplayDelegate = self
         messagesCollectionView.messageCellDelegate = self
         messageInputBar.delegate = self
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -87,16 +86,20 @@ extension MessageViewController: InputBarAccessoryViewDelegate {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty, let selfSender = selfSender else {
             return
         }
+        let messageId = viewModel.createMessageId(otherUserPhone: otherUserPhone)
         messageInputBar.inputTextView.text = nil
         let message = MessageModel(sender: selfSender,
-                                   messageId: viewModel.createMessageId(otherUserPhone: otherUserPhone),
+                                   messageId: messageId,
                               sentDate: Date(),
                               kind: .text(text))
         DatabaseManager.shared.createNewConversations(with: otherUserPhone, name: self.title ?? "User", firstMessage: message) {[weak self] success in
             if success {
-                self?.viewModel.listenForMessages(id: self?.viewModel.createMessageId(otherUserPhone: self!.otherUserPhone) ?? "",
-                                                  messagesCollectionView: self!.messagesCollectionView)
-                self?.messagesCollectionView.reloadData()
+                DispatchQueue.main.async {
+                    let id = "conversation_\(messageId)"
+                    self?.viewModel.listenForMessages(id: id, messagesCollectionView: self!.messagesCollectionView)
+                }
+            } else {
+                print("Failed to send a message")
             }
         }
     }

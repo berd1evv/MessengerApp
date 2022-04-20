@@ -161,11 +161,11 @@
 			children = (
 				A98AB0AD27F60FB700DB2DD8 /* LoginRegistration */,
 				A970000127F77437000FCE58 /* TableViewCells */,
+				A9C236D327F0576700156DBE /* TabBar */,
 				A9C236C827F0563B00156DBE /* ChatsViewController.swift */,
 				A90ADA4C27F208C400C4066D /* NewConversationViewController.swift */,
 				A9C236C627F0563B00156DBE /* MessageViewController.swift */,
 				A9C236D427F0582300156DBE /* ProfileViewController.swift */,
-				A9C236D327F0576700156DBE /* TabBar */,
 			);
 			path = View;
 			sourceTree = "<group>";

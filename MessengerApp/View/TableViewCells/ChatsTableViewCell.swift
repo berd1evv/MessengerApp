@@ -32,6 +32,19 @@ class ChatsTableViewCell: UITableViewCell {
         return label
     }()
     
+    let unreadMessages: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16)
+        label.backgroundColor = .systemBlue
+        label.textColor = .white
+        label.text = "9"
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 20 / 2
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     let userMessageSentDate: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16)
@@ -45,6 +58,7 @@ class ChatsTableViewCell: UITableViewCell {
         addSubview(userNameLabel)
         addSubview(userMessageLabel)
         addSubview(userMessageSentDate)
+        addSubview(unreadMessages)
     }
     
     required init?(coder: NSCoder) {
@@ -91,6 +105,12 @@ class ChatsTableViewCell: UITableViewCell {
             make.left.equalTo(profileImageView.snp.right).offset(10)
             make.width.equalToSuperview().offset(-90)
             make.height.equalTo(20)
+        }
+        
+        unreadMessages.snp.makeConstraints { make in
+            make.bottom.equalTo(userMessageSentDate.snp.top).offset(-5)
+            make.right.equalToSuperview().offset(-10)
+            make.width.height.equalTo(20)
         }
         
         userMessageSentDate.snp.makeConstraints { make in

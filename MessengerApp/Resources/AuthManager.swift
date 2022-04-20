@@ -31,7 +31,6 @@ class AuthManager {
             completion(false)
             return
         }
-
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationId, verificationCode: code)
         auth.signIn(with: credential) { result, error in
             guard result != nil, error == nil else {

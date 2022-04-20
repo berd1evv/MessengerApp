@@ -190,7 +190,18 @@ extension VerificationViewController: UITextFieldDelegate {
                 let code = codeField1.text! + codeField2.text! + codeField3.text! + codeField4.text! + codeField5.text! + codeField6.text!
                 
                 AuthManager.shared.verifyCode(code: code) { [weak self] success in
-                    guard success else { return }
+                    guard success else {
+                        self?.alertLabel.text = "Incorrect code!"
+                        self?.codeField1.text = ""
+                        self?.codeField2.text = ""
+                        self?.codeField3.text = ""
+                        self?.codeField4.text = ""
+                        self?.codeField5.text = ""
+                        self?.codeField6.text = ""
+                        self?.codeField1.becomeFirstResponder()
+                        self?.spinner.dismiss()
+                        return
+                    }
                     DispatchQueue.main.async {
                         self?.spinner.dismiss()
                         if self?.destination == true {
