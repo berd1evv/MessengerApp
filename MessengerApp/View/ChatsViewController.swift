@@ -23,7 +23,7 @@ class ChatsViewController: UIViewController {
             fatalError("init(coder:) has not been implemented")
     }
     
-    let plusButton: UIButton = {
+    private lazy var plusButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .blue

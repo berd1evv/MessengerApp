@@ -15,14 +15,14 @@ class VerificationViewController: UIViewController {
     let spinner = JGProgressHUD(style: .dark)
     var destination = true
         
-    let alertLabel: UILabel = {
+    private lazy var alertLabel: UILabel = {
         let label = UILabel()
         label.textColor = .red
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let codeField1: UITextField = {
+    private lazy var codeField1: UITextField = {
         let text = UITextField()
         text.textAlignment = .center
         text.autocorrectionType = .no
@@ -37,7 +37,7 @@ class VerificationViewController: UIViewController {
         return text
     }()
     
-    let codeField2: UITextField = {
+    private lazy var codeField2: UITextField = {
         let text = UITextField()
         text.textAlignment = .center
         text.autocorrectionType = .no
@@ -52,7 +52,7 @@ class VerificationViewController: UIViewController {
         return text
     }()
     
-    let codeField3: UITextField = {
+    private lazy var codeField3: UITextField = {
         let text = UITextField()
         text.textAlignment = .center
         text.autocorrectionType = .no
@@ -67,7 +67,7 @@ class VerificationViewController: UIViewController {
         return text
     }()
     
-    let codeField4: UITextField = {
+    private lazy var codeField4: UITextField = {
         let text = UITextField()
         text.textAlignment = .center
         text.autocorrectionType = .no
@@ -82,7 +82,7 @@ class VerificationViewController: UIViewController {
         return text
     }()
     
-    let codeField5: UITextField = {
+    private lazy var codeField5: UITextField = {
         let text = UITextField()
         text.textAlignment = .center
         text.autocorrectionType = .no
@@ -97,7 +97,7 @@ class VerificationViewController: UIViewController {
         return text
     }()
     
-    let codeField6: UITextField = {
+    private lazy var codeField6: UITextField = {
         let text = UITextField()
         text.textAlignment = .center
         text.autocorrectionType = .no
@@ -112,7 +112,7 @@ class VerificationViewController: UIViewController {
         return text
     }()
     
-    lazy var stackView: UIStackView = {
+    private lazy var stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.spacing = 10.0

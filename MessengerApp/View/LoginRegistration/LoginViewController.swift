@@ -14,7 +14,7 @@ class LoginViewController: UIViewController {
     
     let spinner = JGProgressHUD(style: .dark)
     
-    let phone: UITextField = {
+    private lazy var phone: UITextField = {
         let text = UITextField()
         text.placeholder = "Enter phone number ex: +996XXXXXXXXX"
         text.textAlignment = .center
@@ -30,14 +30,14 @@ class LoginViewController: UIViewController {
         return text
     }()
     
-    let alertLabel: UILabel = {
+    private lazy var alertLabel: UILabel = {
         let label = UILabel()
         label.textColor = .red
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let loginButton: UIButton = {
+    private lazy var loginButton: UIButton = {
         let button = UIButton()
         button.setTitle("Login", for: .normal)
         button.backgroundColor = .black

@@ -20,7 +20,7 @@ class MessageViewController: MessagesViewController {
         return formatter
     }()
     
-    private let profileImage: UIImageView = {
+    private lazy var profileImage: UIImageView = {
         let img = UIImageView()
         img.image = UIImage(systemName: "person")
         return img

@@ -26,7 +26,7 @@ class NewConversationViewController: UIViewController {
     
     let spinner = JGProgressHUD(style: .dark)
     
-    let searchBar: UISearchBar = {
+    private lazy var searchBar: UISearchBar = {
         let search = UISearchBar()
         search.placeholder = "Search for users"
         search.searchBarStyle = .minimal
@@ -34,7 +34,7 @@ class NewConversationViewController: UIViewController {
         return search
     }()
     
-    let doneButton: UIButton = {
+    private lazy var doneButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Done", for: .normal)
@@ -43,14 +43,14 @@ class NewConversationViewController: UIViewController {
         return button
     }()
     
-    let tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let table = UITableView()
         table.isHidden = false
         table.register(NewConversationTableViewCell.self, forCellReuseIdentifier: "cell")
         return table
     }()
     
-    let label: UILabel = {
+    private lazy var label: UILabel = {
         let label = UILabel()
         label.text = "No Results"
         label.isHidden = true

@@ -24,7 +24,7 @@ class RegisterViewController: UIViewController {
             fatalError("init(coder:) has not been implemented")
     }
             
-    let imageView: UIImageView = {
+    lazy var imageView: UIImageView = {
         let image = UIImageView()
         image.frame = CGRect(x: 130, y: 100, width: 120, height: 120)
         image.image = UIImage(systemName: "person.circle")
@@ -36,7 +36,7 @@ class RegisterViewController: UIViewController {
         return image
     }()
     
-    let firstName: UITextField = {
+    lazy var firstName: UITextField = {
         let text = UITextField()
         text.placeholder = "Enter first name"
         text.textAlignment = .center
@@ -51,7 +51,7 @@ class RegisterViewController: UIViewController {
         return text
     }()
     
-    let lastName: UITextField = {
+    lazy var lastName: UITextField = {
         let text = UITextField()
         text.placeholder = "Enter last name"
         text.textAlignment = .center
@@ -65,7 +65,7 @@ class RegisterViewController: UIViewController {
         return text
     }()
     
-    let email: UITextField = {
+    lazy var email: UITextField = {
         let text = UITextField()
         text.placeholder = "Enter email"
         text.textAlignment = .center
