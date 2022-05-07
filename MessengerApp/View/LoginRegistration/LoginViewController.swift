@@ -14,7 +14,7 @@ class LoginViewController: UIViewController {
     
     let spinner = JGProgressHUD(style: .dark)
     
-    private lazy var phone: UITextField = {
+    private var phone: UITextField = {
         let text = UITextField()
         text.placeholder = "Enter phone number ex: +996XXXXXXXXX"
         text.textAlignment = .center
@@ -30,14 +30,14 @@ class LoginViewController: UIViewController {
         return text
     }()
     
-    private lazy var alertLabel: UILabel = {
+    private var alertLabel: UILabel = {
         let label = UILabel()
         label.textColor = .red
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private lazy var loginButton: UIButton = {
+    private var loginButton: UIButton = {
         let button = UIButton()
         button.setTitle("Login", for: .normal)
         button.backgroundColor = .black
@@ -80,6 +80,7 @@ class LoginViewController: UIViewController {
                     DispatchQueue.main.async {
                         self?.spinner.dismiss()
                         let vc = VerificationViewController()
+                        print(exists)
                         if exists == true {
                             vc.destination = true
                         } else {

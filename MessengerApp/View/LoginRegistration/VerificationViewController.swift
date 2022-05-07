@@ -207,7 +207,7 @@ extension VerificationViewController: UITextFieldDelegate {
                         if self?.destination == true {
                             let vc = TabBarViewController()
                             self?.navigationController?.pushViewController(vc, animated: true)
-                        }else {
+                        } else {
                             let vc = RegisterViewController()
                             self?.navigationController?.pushViewController(vc, animated: true)
                         }
